@@ -1,0 +1,7 @@
+[13:46:00] [13:46:00] Keylogger started
+[13:46:01] [13:46:01] Keylogger stopped
+[13:46:01] [13:46:01] Camera started (salvează pe PC + USB)
+[13:46:03] [13:46:03] PHOTO_SAVED: cam_2026-04-24_13-46-03.jpg (PC + USB)
+[13:46:10] [13:46:10] Camera stopped
+[13:46:13] [13:46:13] SCREENSHOT_SAVED: screenshot_2026-04-24_13-46-13.png (PC + USB)
+[13:46:23] [13:46:23] SCREENSHOT_SAVED: screenshot_2026-04-24_13-46-23.png (PC + USB)
