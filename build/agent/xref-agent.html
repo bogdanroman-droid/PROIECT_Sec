@@ -15,7 +15,7 @@
 
 <div class="node">
   <a name="agent.py"></a>
-  <a target="code" href="///C:/Users/roman/Desktop/KEYLOGGER%20TEST/agent.py" type="text/plain"><tt>agent.py</tt></a>
+  <a target="code" href="///C:/Users/roman/Desktop/KEYLOGGER%20FINAL/PROIECT_Sec/agent.py" type="text/plain"><tt>agent.py</tt></a>
 <span class="moduletype">Script</span>  <div class="import">
 imports:
     <a href="#PIL">PIL</a>
@@ -29,6 +29,10 @@ imports:
  &#8226;   <a href="#ctypes">ctypes</a>
  &#8226;   <a href="#cv2">cv2</a>
  &#8226;   <a href="#datetime">datetime</a>
+ &#8226;   <a href="#email">email</a>
+ &#8226;   <a href="#email.mime.image">email.mime.image</a>
+ &#8226;   <a href="#email.mime.multipart">email.mime.multipart</a>
+ &#8226;   <a href="#email.mime.text">email.mime.text</a>
  &#8226;   <a href="#encodings">encodings</a>
  &#8226;   <a href="#encodings._win_cp_codecs">encodings._win_cp_codecs</a>
  &#8226;   <a href="#encodings.aliases">encodings.aliases</a>
@@ -163,24 +167,29 @@ imports:
  &#8226;   <a href="#ntpath">ntpath</a>
  &#8226;   <a href="#operator">operator</a>
  &#8226;   <a href="#os">os</a>
+ &#8226;   <a href="#poplib">poplib</a>
  &#8226;   <a href="#posixpath">posixpath</a>
  &#8226;   <a href="#pyi_rth_inspect.py">pyi_rth_inspect.py</a>
  &#8226;   <a href="#pyi_rth_multiprocessing.py">pyi_rth_multiprocessing.py</a>
  &#8226;   <a href="#pyi_rth_pkgutil.py">pyi_rth_pkgutil.py</a>
  &#8226;   <a href="#pynput">pynput</a>
  &#8226;   <a href="#pynput.keyboard">pynput.keyboard</a>
+ &#8226;   <a href="#pynput.keyboard._win32">pynput.keyboard._win32</a>
+ &#8226;   <a href="#pynput.mouse._win32">pynput.mouse._win32</a>
  &#8226;   <a href="#re">re</a>
  &#8226;   <a href="#re._casefix">re._casefix</a>
  &#8226;   <a href="#re._compiler">re._compiler</a>
  &#8226;   <a href="#re._constants">re._constants</a>
  &#8226;   <a href="#re._parser">re._parser</a>
  &#8226;   <a href="#reprlib">reprlib</a>
+ &#8226;   <a href="#smtplib">smtplib</a>
  &#8226;   <a href="#socket">socket</a>
  &#8226;   <a href="#sre_compile">sre_compile</a>
  &#8226;   <a href="#sre_constants">sre_constants</a>
  &#8226;   <a href="#sre_parse">sre_parse</a>
  &#8226;   <a href="#stat">stat</a>
  &#8226;   <a href="#sys">sys</a>
+ &#8226;   <a href="#tempfile">tempfile</a>
  &#8226;   <a href="#threading">threading</a>
  &#8226;   <a href="#time">time</a>
  &#8226;   <a href="#traceback">traceback</a>
@@ -5321,6 +5330,7 @@ imported by:
  &#8226;   <a href="#encodings.base64_codec">encodings.base64_codec</a>
  &#8226;   <a href="#http.server">http.server</a>
  &#8226;   <a href="#secrets">secrets</a>
+ &#8226;   <a href="#smtplib">smtplib</a>
  &#8226;   <a href="#ssl">ssl</a>
  &#8226;   <a href="#urllib.request">urllib.request</a>
  &#8226;   <a href="#xmlrpc.client">xmlrpc.client</a>
@@ -6214,6 +6224,7 @@ imported by:
  &#8226;   <a href="#numpy.f2py.func2subr">numpy.f2py.func2subr</a>
  &#8226;   <a href="#numpy.f2py.rules">numpy.f2py.rules</a>
  &#8226;   <a href="#numpy.ma.core">numpy.ma.core</a>
+ &#8226;   <a href="#smtplib">smtplib</a>
  &#8226;   <a href="#tarfile">tarfile</a>
  &#8226;   <a href="#weakref">weakref</a>
  &#8226;   <a href="#webbrowser">webbrowser</a>
@@ -6842,6 +6853,7 @@ imported by:
  &#8226;   <a href="#email.utils">email.utils</a>
  &#8226;   <a href="#http.cookiejar">http.cookiejar</a>
  &#8226;   <a href="#http.server">http.server</a>
+ &#8226;   <a href="#smtplib">smtplib</a>
  &#8226;   <a href="#xmlrpc.client">xmlrpc.client</a>
 
   </div>
@@ -6970,7 +6982,8 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#email._encoded_words">email._encoded_words</a>
+    <a href="#agent.py">agent.py</a>
+ &#8226;   <a href="#email._encoded_words">email._encoded_words</a>
  &#8226;   <a href="#email._header_value_parser">email._header_value_parser</a>
  &#8226;   <a href="#email._parseaddr">email._parseaddr</a>
  &#8226;   <a href="#email._policybase">email._policybase</a>
@@ -6985,6 +6998,10 @@ imported by:
  &#8226;   <a href="#email.headerregistry">email.headerregistry</a>
  &#8226;   <a href="#email.iterators">email.iterators</a>
  &#8226;   <a href="#email.message">email.message</a>
+ &#8226;   <a href="#email.mime">email.mime</a>
+ &#8226;   <a href="#email.mime.base">email.mime.base</a>
+ &#8226;   <a href="#email.mime.image">email.mime.image</a>
+ &#8226;   <a href="#email.mime.nonmultipart">email.mime.nonmultipart</a>
  &#8226;   <a href="#email.parser">email.parser</a>
  &#8226;   <a href="#email.policy">email.policy</a>
  &#8226;   <a href="#email.quoprimime">email.quoprimime</a>
@@ -7100,6 +7117,7 @@ imports:
 imported by:
     <a href="#email.charset">email.charset</a>
  &#8226;   <a href="#email.header">email.header</a>
+ &#8226;   <a href="#smtplib">smtplib</a>
 
   </div>
 
@@ -7165,6 +7183,7 @@ imports:
   <div class="import">
 imported by:
     <a href="#email.charset">email.charset</a>
+ &#8226;   <a href="#email.mime.image">email.mime.image</a>
 
   </div>
 
@@ -7190,6 +7209,7 @@ imported by:
  &#8226;   <a href="#email.header">email.header</a>
  &#8226;   <a href="#email.headerregistry">email.headerregistry</a>
  &#8226;   <a href="#email.message">email.message</a>
+ &#8226;   <a href="#email.mime.nonmultipart">email.mime.nonmultipart</a>
 
   </div>
 
@@ -7236,6 +7256,7 @@ imports:
   <div class="import">
 imported by:
     <a href="#email.message">email.message</a>
+ &#8226;   <a href="#smtplib">smtplib</a>
 
   </div>
 
@@ -7326,10 +7347,125 @@ imports:
 imported by:
     <a href="#email.contentmanager">email.contentmanager</a>
  &#8226;   <a href="#email.feedparser">email.feedparser</a>
+ &#8226;   <a href="#email.mime.base">email.mime.base</a>
  &#8226;   <a href="#email.policy">email.policy</a>
  &#8226;   <a href="#http.client">http.client</a>
  &#8226;   <a href="#importlib.metadata._adapters">importlib.metadata._adapters</a>
  &#8226;   <a href="#pydoc">pydoc</a>
+ &#8226;   <a href="#smtplib">smtplib</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="email.mime"></a>
+  <a target="code" href="///C:/Python314/Lib/email/mime/__init__.py" type="text/plain"><tt>email.mime</tt></a>
+<span class="moduletype">Package</span>  <div class="import">
+imports:
+    <a href="#email">email</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#email.mime.base">email.mime.base</a>
+ &#8226;   <a href="#email.mime.image">email.mime.image</a>
+ &#8226;   <a href="#email.mime.multipart">email.mime.multipart</a>
+ &#8226;   <a href="#email.mime.nonmultipart">email.mime.nonmultipart</a>
+ &#8226;   <a href="#email.mime.text">email.mime.text</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="email.mime.base"></a>
+  <a target="code" href="///C:/Python314/Lib/email/mime/base.py" type="text/plain"><tt>email.mime.base</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#email">email</a>
+ &#8226;   <a href="#email.message">email.message</a>
+ &#8226;   <a href="#email.mime">email.mime</a>
+ &#8226;   <a href="#email.policy">email.policy</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#email.mime.multipart">email.mime.multipart</a>
+ &#8226;   <a href="#email.mime.nonmultipart">email.mime.nonmultipart</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="email.mime.image"></a>
+  <a target="code" href="///C:/Python314/Lib/email/mime/image.py" type="text/plain"><tt>email.mime.image</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#email">email</a>
+ &#8226;   <a href="#email.encoders">email.encoders</a>
+ &#8226;   <a href="#email.mime">email.mime</a>
+ &#8226;   <a href="#email.mime.nonmultipart">email.mime.nonmultipart</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#agent.py">agent.py</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="email.mime.multipart"></a>
+  <a target="code" href="///C:/Python314/Lib/email/mime/multipart.py" type="text/plain"><tt>email.mime.multipart</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#email.mime">email.mime</a>
+ &#8226;   <a href="#email.mime.base">email.mime.base</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#agent.py">agent.py</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="email.mime.nonmultipart"></a>
+  <a target="code" href="///C:/Python314/Lib/email/mime/nonmultipart.py" type="text/plain"><tt>email.mime.nonmultipart</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#email">email</a>
+ &#8226;   <a href="#email.errors">email.errors</a>
+ &#8226;   <a href="#email.mime">email.mime</a>
+ &#8226;   <a href="#email.mime.base">email.mime.base</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#email.mime.image">email.mime.image</a>
+ &#8226;   <a href="#email.mime.text">email.mime.text</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="email.mime.text"></a>
+  <a target="code" href="///C:/Python314/Lib/email/mime/text.py" type="text/plain"><tt>email.mime.text</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#email.mime">email.mime</a>
+ &#8226;   <a href="#email.mime.nonmultipart">email.mime.nonmultipart</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#agent.py">agent.py</a>
 
   </div>
 
@@ -7373,6 +7509,7 @@ imports:
   <div class="import">
 imported by:
     <a href="#email.message">email.message</a>
+ &#8226;   <a href="#email.mime.base">email.mime.base</a>
 
   </div>
 
@@ -7424,6 +7561,7 @@ imported by:
  &#8226;   <a href="#email.message">email.message</a>
  &#8226;   <a href="#email.policy">email.policy</a>
  &#8226;   <a href="#http.server">http.server</a>
+ &#8226;   <a href="#smtplib">smtplib</a>
  &#8226;   <a href="#urllib.request">urllib.request</a>
 
   </div>
@@ -10026,6 +10164,7 @@ imported by:
  &#8226;   <a href="#numpy.f2py._backends._meson">numpy.f2py._backends._meson</a>
  &#8226;   <a href="#pathlib">pathlib</a>
  &#8226;   <a href="#pathlib._os">pathlib._os</a>
+ &#8226;   <a href="#poplib">poplib</a>
  &#8226;   <a href="#posixpath">posixpath</a>
  &#8226;   <a href="#pynput.keyboard._uinput">pynput.keyboard._uinput</a>
  &#8226;   <a href="#shutil">shutil</a>
@@ -10438,6 +10577,7 @@ imports:
   <div class="import">
 imported by:
     <a href="#hmac">hmac</a>
+ &#8226;   <a href="#poplib">poplib</a>
  &#8226;   <a href="#random">random</a>
  &#8226;   <a href="#urllib.request">urllib.request</a>
 
@@ -10482,6 +10622,7 @@ imports:
 imported by:
     <a href="#multiprocessing.connection">multiprocessing.connection</a>
  &#8226;   <a href="#secrets">secrets</a>
+ &#8226;   <a href="#smtplib">smtplib</a>
 
   </div>
 
@@ -11319,6 +11460,7 @@ imported by:
  &#8226;   <a href="#runpy">runpy</a>
  &#8226;   <a href="#shlex">shlex</a>
  &#8226;   <a href="#six">six</a>
+ &#8226;   <a href="#smtplib">smtplib</a>
  &#8226;   <a href="#socket">socket</a>
  &#8226;   <a href="#socketserver">socketserver</a>
  &#8226;   <a href="#subprocess">subprocess</a>
@@ -19828,6 +19970,27 @@ imported by:
 </div>
 
 <div class="node">
+  <a name="poplib"></a>
+  <a target="code" href="///C:/Python314/Lib/poplib.py" type="text/plain"><tt>poplib</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#errno">errno</a>
+ &#8226;   <a href="#hashlib">hashlib</a>
+ &#8226;   <a href="#re">re</a>
+ &#8226;   <a href="#socket">socket</a>
+ &#8226;   <a href="#ssl">ssl</a>
+ &#8226;   <a href="#sys">sys</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#agent.py">agent.py</a>
+
+  </div>
+
+</div>
+
+<div class="node">
   <a name="posix"></a>
   <a target="code" href="" type="text/plain"><tt>posix</tt></a>
 <span class="moduletype">MissingModule</span>  <div class="import">
@@ -20129,7 +20292,6 @@ imports:
  &#8226;   <a href="#os">os</a>
  &#8226;   <a href="#pynput">pynput</a>
  &#8226;   <a href="#pynput._util">pynput._util</a>
- &#8226;   <a href="#pynput._util.win32_vks">pynput._util.win32_vks</a>
  &#8226;   <a href="#six">six</a>
  &#8226;   <a href="#six.moves">six.moves</a>
  &#8226;   <a href="#six.moves.queue">six.moves.queue</a>
@@ -20258,7 +20420,6 @@ imports:
   <div class="import">
 imported by:
     <a href="#pynput">pynput</a>
- &#8226;   <a href="#pynput._util">pynput._util</a>
  &#8226;   <a href="#pynput._util.win32">pynput._util.win32</a>
  &#8226;   <a href="#pynput.keyboard._win32">pynput.keyboard._win32</a>
 
@@ -20321,6 +20482,7 @@ imports:
  &#8226;   <a href="#pynput">pynput</a>
  &#8226;   <a href="#pynput._util">pynput._util</a>
  &#8226;   <a href="#pynput.keyboard">pynput.keyboard</a>
+ &#8226;   <a href="#pynput.keyboard._base">pynput.keyboard._base</a>
 
   </div>
   <div class="import">
@@ -20357,6 +20519,7 @@ imports:
   <div class="import">
 imported by:
     <a href="#pynput">pynput</a>
+ &#8226;   <a href="#pynput.keyboard">pynput.keyboard</a>
  &#8226;   <a href="#pynput.keyboard._darwin">pynput.keyboard._darwin</a>
  &#8226;   <a href="#pynput.keyboard._dummy">pynput.keyboard._dummy</a>
  &#8226;   <a href="#pynput.keyboard._uinput">pynput.keyboard._uinput</a>
@@ -20452,7 +20615,8 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#pynput">pynput</a>
+    <a href="#agent.py">agent.py</a>
+ &#8226;   <a href="#pynput">pynput</a>
 
   </div>
 
@@ -20494,6 +20658,7 @@ imports:
     <a href="#pynput">pynput</a>
  &#8226;   <a href="#pynput._util">pynput._util</a>
  &#8226;   <a href="#pynput.mouse">pynput.mouse</a>
+ &#8226;   <a href="#pynput.mouse._base">pynput.mouse._base</a>
 
   </div>
   <div class="import">
@@ -20524,6 +20689,7 @@ imports:
   <div class="import">
 imported by:
     <a href="#pynput">pynput</a>
+ &#8226;   <a href="#pynput.mouse">pynput.mouse</a>
  &#8226;   <a href="#pynput.mouse._darwin">pynput.mouse._darwin</a>
  &#8226;   <a href="#pynput.mouse._dummy">pynput.mouse._dummy</a>
  &#8226;   <a href="#pynput.mouse._win32">pynput.mouse._win32</a>
@@ -20587,7 +20753,8 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#pynput">pynput</a>
+    <a href="#agent.py">agent.py</a>
+ &#8226;   <a href="#pynput">pynput</a>
 
   </div>
 
@@ -20793,6 +20960,7 @@ imported by:
  &#8226;   <a href="#pdb">pdb</a>
  &#8226;   <a href="#pkgutil">pkgutil</a>
  &#8226;   <a href="#platform">platform</a>
+ &#8226;   <a href="#poplib">poplib</a>
  &#8226;   <a href="#posixpath">posixpath</a>
  &#8226;   <a href="#pprint">pprint</a>
  &#8226;   <a href="#pydoc">pydoc</a>
@@ -20803,6 +20971,7 @@ imported by:
  &#8226;   <a href="#re._constants">re._constants</a>
  &#8226;   <a href="#re._parser">re._parser</a>
  &#8226;   <a href="#rlcompleter">rlcompleter</a>
+ &#8226;   <a href="#smtplib">smtplib</a>
  &#8226;   <a href="#sre_compile">sre_compile</a>
  &#8226;   <a href="#sre_constants">sre_constants</a>
  &#8226;   <a href="#sre_parse">sre_parse</a>
@@ -21230,6 +21399,34 @@ imported by:
 </div>
 
 <div class="node">
+  <a name="smtplib"></a>
+  <a target="code" href="///C:/Python314/Lib/smtplib.py" type="text/plain"><tt>smtplib</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#base64">base64</a>
+ &#8226;   <a href="#copy">copy</a>
+ &#8226;   <a href="#datetime">datetime</a>
+ &#8226;   <a href="#email.base64mime">email.base64mime</a>
+ &#8226;   <a href="#email.generator">email.generator</a>
+ &#8226;   <a href="#email.message">email.message</a>
+ &#8226;   <a href="#email.utils">email.utils</a>
+ &#8226;   <a href="#hmac">hmac</a>
+ &#8226;   <a href="#io">io</a>
+ &#8226;   <a href="#re">re</a>
+ &#8226;   <a href="#socket">socket</a>
+ &#8226;   <a href="#ssl">ssl</a>
+ &#8226;   <a href="#sys">sys</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#agent.py">agent.py</a>
+
+  </div>
+
+</div>
+
+<div class="node">
   <a name="socket"></a>
   <a target="code" href="///C:/Python314/Lib/socket.py" type="text/plain"><tt>socket</tt></a>
 <span class="moduletype">SourceModule</span>  <div class="import">
@@ -21266,6 +21463,8 @@ imported by:
  &#8226;   <a href="#multiprocessing.resource_sharer">multiprocessing.resource_sharer</a>
  &#8226;   <a href="#pdb">pdb</a>
  &#8226;   <a href="#platform">platform</a>
+ &#8226;   <a href="#poplib">poplib</a>
+ &#8226;   <a href="#smtplib">smtplib</a>
  &#8226;   <a href="#socketserver">socketserver</a>
  &#8226;   <a href="#ssl">ssl</a>
  &#8226;   <a href="#urllib.request">urllib.request</a>
@@ -21377,6 +21576,8 @@ imported by:
  &#8226;   <a href="#ftplib">ftplib</a>
  &#8226;   <a href="#http.client">http.client</a>
  &#8226;   <a href="#http.server">http.server</a>
+ &#8226;   <a href="#poplib">poplib</a>
+ &#8226;   <a href="#smtplib">smtplib</a>
  &#8226;   <a href="#urllib.request">urllib.request</a>
 
   </div>
@@ -21735,6 +21936,7 @@ imported by:
  &#8226;   <a href="#pickle">pickle</a>
  &#8226;   <a href="#pkgutil">pkgutil</a>
  &#8226;   <a href="#platform">platform</a>
+ &#8226;   <a href="#poplib">poplib</a>
  &#8226;   <a href="#posixpath">posixpath</a>
  &#8226;   <a href="#pprint">pprint</a>
  &#8226;   <a href="#py_compile">py_compile</a>
@@ -21750,6 +21952,7 @@ imported by:
  &#8226;   <a href="#shlex">shlex</a>
  &#8226;   <a href="#shutil">shutil</a>
  &#8226;   <a href="#six">six</a>
+ &#8226;   <a href="#smtplib">smtplib</a>
  &#8226;   <a href="#socket">socket</a>
  &#8226;   <a href="#socketserver">socketserver</a>
  &#8226;   <a href="#ssl">ssl</a>
@@ -21877,6 +22080,7 @@ imported by:
  &#8226;   <a href="#PIL.ImageGrab">PIL.ImageGrab</a>
  &#8226;   <a href="#PIL.JpegImagePlugin">PIL.JpegImagePlugin</a>
  &#8226;   <a href="#_pyrepl.pager">_pyrepl.pager</a>
+ &#8226;   <a href="#agent.py">agent.py</a>
  &#8226;   <a href="#asyncio.windows_utils">asyncio.windows_utils</a>
  &#8226;   <a href="#ctypes.util">ctypes.util</a>
  &#8226;   <a href="#importlib.resources._common">importlib.resources._common</a>

